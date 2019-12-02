@@ -20,9 +20,8 @@ func fibonacci(i int) int {
 func handler(n int) (int, error) {
 	if n < 0 {
 		return -1, errors.New("Input must be a positive number")
-	} else {
-		return fibonacci(n), nil
 	}
+	return fibonacci(n), nil
 }
 
 func main() {
