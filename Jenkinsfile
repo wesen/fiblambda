@@ -48,7 +48,6 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
                                                                      url          : 'git@github.com:wesen/fiblambda.git']]])
         def gitBranch = scmInfo.GIT_BRANCH
         def gitCommit = scmInfo.GIT_COMMIT
-        def (remote, _, tool, releaseType, version) = gitBranch.split("/")
         def tag = "${env.BUILD_TAG}-${gitCommit}"
         def zipName = "${gitBranch}-${gitCommit}.zip"
 
