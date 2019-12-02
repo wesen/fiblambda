@@ -53,7 +53,7 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
 
         container("builder") {
             stage('Test'){
-                sh 'go get -u github.com/golang/lint/golint'
+                sh 'go get -u golang.org/x/lint'
                 sh 'golint -set_exit_status'
                 sh 'go vet .'
                 sh 'go test .'
