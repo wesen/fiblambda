@@ -6,6 +6,8 @@ def bucket = 'fib-lambda-s3-bucket'
 def functionName = 'Fibonacci'
 def region = 'us-east-1'
 
+def ptNameVersion = "${app}-${UUID.randomUUID().toString().toLowerCase()}"
+
 /*
 Requirements:
 - A credential set in Jenkins named 'api' with read access to all necessary repositories.
