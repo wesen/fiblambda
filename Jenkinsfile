@@ -17,7 +17,7 @@ Requirements:
 
 podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
         containerTemplate(name: 'builder',
-                image: 'docker.dev.formlabs.cloud/moria/jenkins:2.150.3',
+                image: 'docker.dev.formlabs.cloud/moria/lambda-builder:0.1.0',
                 ttyEnabled: true,
                 command: 'cat',
                 args: ''),
