@@ -70,9 +70,6 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
                 accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                 secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
             ]]) {
-                sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1 aws sts get-caller-identity'
-                sh 'aws sts get-caller-identity'
-
                 stage('Push'){
                     sh "aws s3 cp ${zipName} s3://${bucket}"
                 }
