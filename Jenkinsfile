@@ -1,4 +1,4 @@
-!groovy
+#!groovy
 
 def app = "fiblambda"
 
