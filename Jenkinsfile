@@ -80,6 +80,16 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
                             --s3-key ${zipName} \
                             --region ${region}"
                 }
+
+                if (releaseType == 'release') {
+                    stage('Publish') {
+                        def lambdaVersion = sh(
+                            script: "aws lambda publish-version --function-name ${functionName} --region ${region} | jq -r '.Version'",
+                            returnStdout: true
+                        )
+                        sh "aws lambda update-alias --function-name ${functionName} --name production --region ${region} --function-version ${lambdaVersion}"
+                    }
+                }
             }
         }
     }
