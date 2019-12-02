@@ -91,3 +91,15 @@ resource "aws_iam_user_policy_attachment" "worker_user_lambda_attachment" {
   policy_arn = aws_iam_policy.lambda_policy.arn
 }
 
+
+resource "aws_iam_access_key" "worker_user" {
+  user = aws_iam_user.worker_user.name
+}
+
+output "user_name" {
+  value = aws_iam_user.worker_user.name
+}
+
+output "secret" {
+  value = aws_iam_access_key.worker_user.secret
+}

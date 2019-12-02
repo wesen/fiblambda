@@ -59,6 +59,16 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
         def zipName = "${gitBranch}-${gitCommit}.zip"
 
         container("builder") {
+            withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'fiblambda',
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+            ]]) {
+                sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1 aws sts get-caller-identity'
+                sh 'sleep 1m' // SOOOO HACKY!!!
+            }
+
             withCredentials([sshUserPrivateKey(
                     credentialsId: 'moria_jenkins_write_deploy',
                     keyFileVariable: 'GIT_SSH_KEY')
