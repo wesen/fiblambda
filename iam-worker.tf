@@ -76,3 +76,18 @@ resource "aws_iam_role_policy_attachment" "worker_lambda_attachment" {
   role = aws_iam_role.worker_role.name
   policy_arn = aws_iam_policy.lambda_policy.arn
 }
+
+resource "aws_iam_user" "worker_user" {
+  name = "FibLambdaJenkinsBuildUser"
+}
+
+resource "aws_iam_user_policy_attachment" "worker_user_s3_attachment" {
+  user = aws_iam_user.worker_user.name
+  policy_arn = aws_iam_policy.s3_policy.arn
+}
+
+resource "aws_iam_user_policy_attachment" "worker_user_lambda_attachment" {
+  user = aws_iam_user.worker_user.name
+  policy_arn = aws_iam_policy.lambda_policy.arn
+}
+
