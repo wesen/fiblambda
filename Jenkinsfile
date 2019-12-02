@@ -53,26 +53,8 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
         def zipName = "${gitBranch}-${gitCommit}.zip"
 
         container("builder") {
-            withCredentials([[
-                $class: 'AmazonWebServicesCredentialsBinding',
-                credentialsId: 'fiblambda',
-                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-            ]]) {
-                sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1 aws sts get-caller-identity'
-                sh 'sleep 1m' // SOOOO HACKY!!!
-            }
-
-            withCredentials([sshUserPrivateKey(
-                    credentialsId: 'moria_jenkins_write_deploy',
-                    keyFileVariable: 'GIT_SSH_KEY')
-            ]) {
-                sh "mkdir -p /root/ && cp \$GIT_SSH_KEY /root/.ssh/id_rsa && chmod 400 /root/.ssh/id_rsa"
-            }
-
             stage('Test'){
                 sh 'go get -u github.com/golang/lint/golint'
-                sh 'go get -t ./...'
                 sh 'golint -set_exit_status'
                 sh 'go vet .'
                 sh 'go test .'
@@ -83,15 +65,25 @@ podTemplate(name: ptNameVersion, label: ptNameVersion, containers: [
                 sh "zip ${zipName} main"
             }
 
-            stage('Push'){
-                sh "aws s3 cp ${zipName} s3://${bucket}"
-            }
+            withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'fiblambda',
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+            ]]) {
+                sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1 aws sts get-caller-identity'
+                sh 'sleep 1m' // SOOOO HACKY!!!
 
-            stage('Deploy'){
-                sh "aws lambda update-function-code --function-name ${functionName} \
-                        --s3-bucket ${bucket} \
-                        --s3-key ${zipName} \
-                        --region ${region}"
+                stage('Push'){
+                    sh "aws s3 cp ${zipName} s3://${bucket}"
+                }
+
+                stage('Deploy'){
+                    sh "aws lambda update-function-code --function-name ${functionName} \
+                            --s3-bucket ${bucket} \
+                            --s3-key ${zipName} \
+                            --region ${region}"
+                }
             }
         }
     }
